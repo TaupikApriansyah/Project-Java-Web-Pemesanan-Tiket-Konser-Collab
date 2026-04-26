@@ -7,6 +7,26 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" th:href="@{/css/custom.css}">
 </head>
+<!-- Navbar -->
+<nav class="glass-nav sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 md:px-8 h-20 flex justify-between items-center">
+        <a th:href="@{/}" class="flex items-center gap-3 font-bold uppercase tracking-tight">
+            <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center">
+                <i class="fas fa-ticket-alt"></i>
+            </span>
+            Event<span class="text-emerald-400 -ml-3">Tick</span> Admin
+        </a>
+        <div class="flex gap-5 text-[10px] md:text-xs uppercase tracking-widest font-bold overflow-x-auto no-scrollbar">
+            <a th:href="@{/admin/dashboard}" class="text-slate-400 hover:text-white">Dashboard</a>
+            <a th:href="@{/admin/tiket}" class="text-slate-400 hover:text-white">Konser</a>
+            <a th:href="@{/admin/users}" class="text-slate-400 hover:text-white">User</a>
+            <a th:href="@{/admin/scan}" class="text-emerald-400">Validasi</a>
+            <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post">
+                <button class="text-slate-400 hover:text-red-400 uppercase">Logout</button>
+            </form>
+        </div>
+    </div>
+</nav>
 <body>
 <div class="bg-mesh"></div>
 
