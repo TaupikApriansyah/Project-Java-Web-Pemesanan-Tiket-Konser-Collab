@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - EventTick</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/custom.css}">
+</head>
+<body>
+<div class="bg-mesh"></div>
+<nav class="glass-nav sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 md:px-8 h-20 flex justify-between items-center">
+        <a th:href="@{/}" class="flex items-center gap-3 font-bold uppercase tracking-tight">
+            <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center"><i class="fas fa-ticket-alt"></i></span>
+            Event<span class="text-emerald-400 -ml-3">Tick</span> Admin
+        </a>
+        <div class="flex gap-5 text-[10px] md:text-xs uppercase tracking-widest font-bold overflow-x-auto no-scrollbar">
+            <a th:href="@{/admin/dashboard}" class="text-emerald-400">Dashboard</a>
+            <a th:href="@{/admin/tiket}" class="text-slate-400 hover:text-white">Konser</a>
+            <a th:href="@{/admin/users}" class="text-slate-400 hover:text-white">User</a>
+            <a th:href="@{/admin/scan}" class="text-slate-400 hover:text-white">Validasi</a>
+        </div>
+    </div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-6 md:px-8 py-12 md:py-16">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+        <div>
+            <p class="text-emerald-400 text-[10px] font-black uppercase tracking-[0.35em] mb-3">Booking Analytics</p>
+            <h1 class="text-4xl md:text-6xl font-black tracking-tighter">Dashboard Pemesanan</h1>
+            <p class="text-slate-500 mt-3 text-sm md:text-base">Pantau grafik penjualan tiket, pendapatan, status booking, dan rekap detail pemesanan.</p>
+        </div>
+        <div class="flex gap-3">
+            <a th:href="@{/admin/tiket/add}" class="btn-premium px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-widest text-white">
+                <i class="fas fa-plus mr-2"></i>Tambah Konser
+            </a>
+            <button onclick="window.print()" class="px-5 py-3 rounded-2xl bg-white/5 border border-white/10 text-xs font-black uppercase tracking-widest text-slate-300 hover:text-white">
+                <i class="fas fa-print mr-2"></i>Cetak Rekap
+            </button>
+        </div>
+    </div>
+
+    <section class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="panel rounded-3xl p-6">
+            <p class="text-slate-500 text-[10px] uppercase tracking-widest font-black">Total User</p>
+            <p class="text-4xl font-black mt-2" th:text="${summary.totalUser}">0</p>
+            <p class="text-xs text-slate-500 mt-3"><i class="fas fa-users mr-2 text-emerald-400"></i>Akun terdaftar</p>
+        </div>
+        <div class="panel rounded-3xl p-6">
+            <p class="text-slate-500 text-[10px] uppercase tracking-widest font-black">Total Konser</p>
+            <p class="text-4xl font-black mt-2" th:text="${summary.totalTiket}">0</p>
+            <p class="text-xs text-slate-500 mt-3"><i class="fas fa-music mr-2 text-blue-400"></i>Event tersedia</p>
+        </div>
+        <div class="panel rounded-3xl p-6">
+            <p class="text-slate-500 text-[10px] uppercase tracking-widest font-black">Total Booking</p>
+            <p class="text-4xl font-black mt-2" th:text="${summary.totalBooking}">0</p>
+            <p class="text-xs text-slate-500 mt-3"><i class="fas fa-receipt mr-2 text-purple-400"></i>Semua transaksi</p>
+        </div>
+        <div class="panel rounded-3xl p-6">
+            <p class="text-slate-500 text-[10px] uppercase tracking-widest font-black">Pendapatan</p>
+            <p class="text-3xl font-black mt-2">Rp <span th:text="${#numbers.formatDecimal(summary.pendapatan,0,'POINT',0,'COMMA')}">0</span></p>
+            <p class="text-xs text-slate-500 mt-3"><i class="fas fa-wallet mr-2 text-emerald-400"></i>Selain cancelled</p>
+        </div>
+    </section>
+
+    <section class="grid lg:grid-cols-3 gap-6 mb-8">
+        <div class="panel rounded-3xl p-6 lg:col-span-2">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-xl font-black">Grafik Pemesanan Harian</h2>
+                    <p class="text-xs text-slate-500 mt-1">Jumlah booking berdasarkan tanggal pemesanan.</p>
+                </div>
+                <span class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Daily Trend</span>
+            </div>
+            <div class="h-72"><canvas id="dailyBookingChart"></canvas></div>
+        </div>
+
+        <div class="panel rounded-3xl p-6">
+            <div class="mb-6">
+                <h2 class="text-xl font-black">Status Booking</h2>
+                <p class="text-xs text-slate-500 mt-1">Komposisi status tiket.</p>
+            </div>
+            <div class="h-72"><canvas id="statusBookingChart"></canvas></div>
+        </div>
+    </section>
+
+    <section class="grid lg:grid-cols-2 gap-6 mb-10">
+        <div class="panel rounded-3xl p-6">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-xl font-black">Konser Terlaris</h2>
+                    <p class="text-xs text-slate-500 mt-1">Total tiket terjual per konser.</p>
+                </div>
+                <i class="fas fa-chart-bar text-emerald-400"></i>
+            </div>
+            <div class="h-72"><canvas id="topEventChart"></canvas></div>
+        </div>
+
+        <div class="panel rounded-3xl p-6">
+            <h2 class="text-xl font-black mb-6">Ringkasan Status</h2>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 rounded-2xl bg-white/[0.03] border border-white/5">
+                    <div><p class="font-black">PAID</p><p class="text-xs text-slate-500">Sudah dibayar, belum divalidasi</p></div>
+                    <p class="text-2xl font-black text-emerald-400" th:text="${summary.paid}">0</p>
+                </div>
+                <div class="flex items-center justify-between p-4 rounded-2xl bg-white/[0.03] border border-white/5">
+                    <div><p class="font-black">VALIDATED</p><p class="text-xs text-slate-500">Tiket sudah dipakai/valid</p></div>
+                    <p class="text-2xl font-black text-blue-400" th:text="${summary.validated}">0</p>
+                </div>
+                <div class="flex items-center justify-between p-4 rounded-2xl bg-white/[0.03] border border-white/5">
+                    <div><p class="font-black">PENDING</p><p class="text-xs text-slate-500">Menunggu proses</p></div>
+                    <p class="text-2xl font-black text-purple-400" th:text="${summary.pending}">0</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
+            <div>
+                <h2 class="text-2xl font-black">Rekap Detail Pemesanan</h2>
+                <p class="text-slate-500 text-sm mt-1">Data lengkap kode, user, konser, tanggal, waktu, jumlah, metode bayar, total, dan status.</p>
+            </div>
+            <div class="relative w-full md:w-80">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                <input id="bookingSearch" type="text" placeholder="Cari kode, user, konser..." class="input-premium w-full pl-11 pr-4 py-3 rounded-2xl text-sm">
+            </div>
+        </div>
+
+        <div class="panel rounded-3xl overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm" id="bookingTable">
+                    <thead class="text-slate-500 uppercase tracking-widest text-[10px] bg-white/[0.02]">
+                        <tr>
+                            <th class="p-4 text-left">Kode</th>
+                            <th class="p-4 text-left">Tanggal</th>
+                            <th class="p-4 text-left">Waktu</th>
+                            <th class="p-4 text-left">User</th>
+                            <th class="p-4 text-left">Email</th>
+                            <th class="p-4 text-left">Konser</th>
+                            <th class="p-4 text-center">Jumlah</th>
+                            <th class="p-4 text-left">Pembayaran</th>
+                            <th class="p-4 text-right">Total</th>
+                            <th class="p-4 text-left">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="b:${bookingList}" class="border-t border-white/5 hover:bg-white/[0.025]">
+                            <td class="p-4 text-emerald-400 font-black whitespace-nowrap" th:text="${b.kodeBooking}">BK-XXXX</td>
+                            <td class="p-4 whitespace-nowrap" th:text="${#temporals.format(b.bookedAt, 'dd MMM yyyy')}">24 Apr 2026</td>
+                            <td class="p-4 whitespace-nowrap text-slate-400" th:text="${#temporals.format(b.bookedAt, 'HH:mm')}">14:00</td>
+                            <td class="p-4 font-bold whitespace-nowrap" th:text="${b.user.nama}">Nama</td>
+                            <td class="p-4 text-slate-400 whitespace-nowrap" th:text="${b.user.email}">email</td>
+                            <td class="p-4 min-w-56" th:text="${b.tiket.nama}">Konser</td>
+                            <td class="p-4 text-center font-black" th:text="${b.jumlah}">1</td>
+                            <td class="p-4 whitespace-nowrap" th:text="${b.metodePembayaran}">Transfer</td>
+                            <td class="p-4 text-right font-black whitespace-nowrap">Rp <span th:text="${#numbers.formatDecimal(b.totalHarga,0,'POINT',0,'COMMA')}">0</span></td>
+                            <td class="p-4">
+                                <span class="btn-status"
+                                      th:classappend="${b.status == 'PAID'} ? ' status-selling' : (${b.status == 'VALIDATED'} ? ' status-upcoming' : ' status-sold-out')"
+                                      th:text="${b.status}">PAID</span>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(bookingList)}">
+                            <td colspan="10" class="p-10 text-center text-slate-500">Belum ada data pemesanan.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
+
+<a href="javascript:history.back()" class="mobile-back" title="Kembali"><i class="fas fa-arrow-left"></i></a>
+
+<script th:inline="javascript">
+    const dailyLabels = /*[[${chart.dailyLabels}]]*/ [];
+    const dailyCounts = /*[[${chart.dailyCounts}]]*/ [];
+    const statusLabels = /*[[${chart.statusLabels}]]*/ [];
+    const statusCounts = /*[[${chart.statusCounts}]]*/ [];
+    const eventLabels = /*[[${chart.eventLabels}]]*/ [];
+    const eventTickets = /*[[${chart.eventTickets}]]*/ [];
+
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.borderColor = 'rgba(255,255,255,0.07)';
+    Chart.defaults.font.family = 'Plus Jakarta Sans';
+
+    new Chart(document.getElementById('dailyBookingChart'), {
+        type: 'line',
+        data: {
+            labels: dailyLabels,
+            datasets: [{
+                label: 'Jumlah Booking',
+                data: dailyCounts,
+                tension: 0.35,
+                fill: true,
+                borderWidth: 3,
+                pointRadius: 4,
+                pointHoverRadius: 7
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+    });
+
+    new Chart(document.getElementById('statusBookingChart'), {
+        type: 'doughnut',
+        data: {
+            labels: statusLabels,
+            datasets: [{ data: statusCounts, borderWidth: 0 }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, usePointStyle: true } } },
+            cutout: '68%'
+        }
+    });
+
+    new Chart(document.getElementById('topEventChart'), {
+        type: 'bar',
+        data: {
+            labels: eventLabels,
+            datasets: [{ label: 'Tiket Terjual', data: eventTickets, borderWidth: 1, borderRadius: 8 }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+    });
+
+    const searchInput = document.getElementById('bookingSearch');
+    const rows = document.querySelectorAll('#bookingTable tbody tr');
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            const keyword = this.value.toLowerCase();
+            rows.forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(keyword) ? '' : 'none';
+            });
+        });
+    }
+</script>
+</body>
+</html>
