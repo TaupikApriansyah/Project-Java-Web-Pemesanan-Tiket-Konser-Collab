@@ -1,1 +1,39 @@
-<!DOCTYPE html><html lang="id" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Hasil Validasi</title><script src="https://cdn.tailwindcss.com"></script><link rel="stylesheet" th:href="@{/css/custom.css}"></head><body><div class="bg-mesh"></div><main class="max-w-xl mx-auto px-8 py-20"><section class="panel rounded-[32px] p-8"><h1 class="text-4xl font-extrabold tracking-tighter mb-8">Hasil Validasi</h1><div th:if="${error}" class="rounded-2xl border border-red-500/20 bg-red-500/10 p-5 text-red-300" th:text="${error}"></div><div th:if="${booking}" class="space-y-3"><p class="text-emerald-400 text-2xl font-black" th:text="${booking.kodeBooking}"></p><p><b>Event:</b> <span th:text="${booking.tiket.nama}"></span></p><p><b>User:</b> <span th:text="${booking.user.nama}"></span></p><p><b>Jumlah:</b> <span th:text="${booking.jumlah}"></span> tiket</p><p><b>Status:</b> <span th:text="${booking.status}"></span></p></div><a th:href="@{/admin/scan}" class="block mt-8 text-center btn-premium rounded-2xl py-4 font-bold text-xs uppercase tracking-widest">Validasi Lagi</a></section></main></body></html>
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasil Validasi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/custom.css}">
+</head>
+<body>
+<div class="bg-mesh"></div>
+
+<main class="max-w-xl mx-auto px-8 py-20">
+    <section class="panel rounded-[32px] p-8">
+        <h1 class="text-4xl font-extrabold tracking-tighter mb-8">Hasil Validasi</h1>
+
+        <!-- Error -->
+        <div th:if="${error}"
+             class="rounded-2xl border border-red-500/20 bg-red-500/10 p-5 text-red-300"
+             th:text="${error}"></div>
+
+        <!-- Booking info -->
+        <div th:if="${booking}" class="space-y-3">
+            <p class="text-emerald-400 text-2xl font-black" th:text="${booking.kodeBooking}"></p>
+
+            <p><b>Event:</b> <span th:text="${booking.tiket.nama}"></span></p>
+            <p><b>User:</b> <span th:text="${booking.user.nama}"></span></p>
+            <p><b>Jumlah:</b> <span th:text="${booking.jumlah}"></span> tiket</p>
+            <p><b>Status:</b> <span th:text="${booking.status}"></span></p>
+        </div>
+
+        <a th:href="@{/admin/scan}"
+           class="block mt-8 text-center btn-premium rounded-2xl py-4 font-bold text-xs uppercase tracking-widest">
+            Validasi Lagi
+        </a>
+    </section>
+</main>
+</body>
+</html>

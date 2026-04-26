@@ -1,1 +1,35 @@
-<!DOCTYPE html><html lang="id" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Validasi Tiket</title><script src="https://cdn.tailwindcss.com"></script><link rel="stylesheet" th:href="@{/css/custom.css}"></head><body><div class="bg-mesh"></div><main class="max-w-xl mx-auto px-8 py-20"><a th:href="@{/admin/dashboard}" class="text-xs uppercase tracking-widest text-slate-500">← Dashboard</a><section class="panel rounded-[32px] p-8 mt-8"><h1 class="text-4xl font-extrabold tracking-tighter mb-2">Validasi Tiket</h1><p class="text-slate-500 mb-8">Masukkan kode booking dari tiket digital.</p><form th:action="@{/admin/scan}" method="post" class="space-y-4"><input name="kodeBooking" class="w-full input-premium rounded-2xl px-5 py-4 uppercase" placeholder="BK-XXXXXXXX" required><button class="w-full btn-premium rounded-2xl py-4 font-bold text-xs uppercase tracking-widest">Validasi</button></form></section></main></body></html>
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validasi Tiket</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/custom.css}">
+</head>
+<body>
+<div class="bg-mesh"></div>
+
+<main class="max-w-xl mx-auto px-8 py-20">
+    <a th:href="@{/admin/dashboard}"
+       class="text-xs uppercase tracking-widest text-slate-500">
+        ← Dashboard
+    </a>
+
+    <section class="panel rounded-[32px] p-8 mt-8">
+        <h1 class="text-4xl font-extrabold tracking-tighter mb-2">Validasi Tiket</h1>
+        <p class="text-slate-500 mb-8">Masukkan kode booking dari tiket digital.</p>
+
+        <form th:action="@{/admin/scan}" method="post" class="space-y-4">
+            <input name="kodeBooking"
+                   class="w-full input-premium rounded-2xl px-5 py-4 uppercase"
+                   placeholder="BK-XXXXXXXX"
+                   required>
+            <button class="w-full btn-premium rounded-2xl py-4 font-bold text-xs uppercase tracking-widest">
+                Validasi
+            </button>
+        </form>
+    </section>
+</main>
+</body>
+</html>

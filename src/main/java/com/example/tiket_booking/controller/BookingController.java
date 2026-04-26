@@ -9,15 +9,19 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class BookingController {
+
     private final BookingService bookingService;
     private final UserService userService;
     private final TiketService tiketService;
 
     public BookingController(BookingService bookingService, UserService userService, TiketService tiketService) {
-        this.bookingService = bookingService; this.userService = userService; this.tiketService = tiketService;
+        this.bookingService = bookingService;
+        this.userService = userService;
+        this.tiketService = tiketService;
     }
 
     @GetMapping("/booking/confirm/{tiketId}")
@@ -27,7 +31,9 @@ public class BookingController {
     }
 
     @PostMapping("/booking/create/{tiketId}")
-    public String create(@PathVariable Long tiketId, @RequestParam int jumlah, @RequestParam String metodePembayaran,
+    public String create(@PathVariable Long tiketId,
+                         @RequestParam int jumlah,
+                         @RequestParam String metodePembayaran,
                          Authentication auth, Model model) {
         try {
             User user = userService.findByEmail(auth.getName());
@@ -57,5 +63,19 @@ public class BookingController {
     public String print(@PathVariable Long id, Model model) {
         model.addAttribute("booking", bookingService.findById(id));
         return "user/print-ticket";
+    }
+
+    @PostMapping("/booking/refund/{id}")
+    public String refund(@PathVariable Long id,
+                         Authentication auth,
+                         RedirectAttributes redirectAttributes) {
+        try {
+            User user = userService.findByEmail(auth.getName());
+            bookingService.refundBooking(id, user);
+            redirectAttributes.addFlashAttribute("successMessage", "Refund berhasil. Stok tiket telah dikembalikan.");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/riwayat";
     }
 }

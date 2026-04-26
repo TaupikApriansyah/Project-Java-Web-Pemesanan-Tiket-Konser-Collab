@@ -14,6 +14,7 @@ import java.util.Map;
 
 @Service
 public class DashboardService {
+
     private final UserRepository userRepository;
     private final TiketRepository tiketRepository;
     private final BookingRepository bookingRepository;
@@ -29,11 +30,13 @@ public class DashboardService {
         data.put("totalUser", userRepository.count());
         data.put("totalTiket", tiketRepository.count());
         data.put("totalBooking", bookingRepository.count());
+
         BigDecimal pendapatan = bookingRepository.sumPendapatan();
         data.put("pendapatan", pendapatan);
         data.put("paid", bookingRepository.countByStatus("PAID"));
         data.put("validated", bookingRepository.countByStatus("VALIDATED"));
         data.put("pending", bookingRepository.countByStatus("PENDING"));
+        data.put("refunded", bookingRepository.countByStatus("REFUNDED"));
         return data;
     }
 

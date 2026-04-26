@@ -14,6 +14,7 @@ import java.util.UUID;
 
 @Service
 public class BookingService {
+
     private final BookingRepository bookingRepository;
     private final TiketRepository tiketRepository;
 
@@ -25,7 +26,10 @@ public class BookingService {
     @Transactional
     public Booking createBooking(User user, Long tiketId, int jumlah, String metodePembayaran) {
         if (jumlah <= 0) throw new RuntimeException("Jumlah tiket harus lebih dari 0");
-        Tiket tiket = tiketRepository.findById(tiketId).orElseThrow(() -> new RuntimeException("Tiket tidak ditemukan"));
+
+        Tiket tiket = tiketRepository.findById(tiketId)
+                .orElseThrow(() -> new RuntimeException("Tiket tidak ditemukan"));
+
         if (tiket.getStok() < jumlah) throw new RuntimeException("Stok tiket tidak mencukupi");
 
         tiket.setStok(tiket.getStok() - jumlah);
@@ -39,13 +43,49 @@ public class BookingService {
         booking.setTotalHarga(tiket.getHarga().multiply(BigDecimal.valueOf(jumlah)));
         booking.setMetodePembayaran(metodePembayaran);
         booking.setStatus("PAID");
+
         return bookingRepository.save(booking);
     }
 
-    public List<Booking> findByUser(User user) { return bookingRepository.findByUserOrderByBookedAtDesc(user); }
-    public List<Booking> findAll() { return bookingRepository.findAllByOrderByBookedAtDesc(); }
-    public Booking findById(Long id) { return bookingRepository.findById(id).orElseThrow(() -> new RuntimeException("Booking tidak ditemukan")); }
-    public Booking findByKode(String kode) { return bookingRepository.findByKodeBooking(kode).orElseThrow(() -> new RuntimeException("Kode booking tidak ditemukan")); }
+    @Transactional
+    public Booking refundBooking(Long bookingId, User user) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking tidak ditemukan"));
+
+        if (!booking.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Anda tidak memiliki akses ke booking ini");
+        }
+
+        if (!booking.getStatus().equals("PAID")) {
+            throw new RuntimeException("Hanya booking berstatus PAID yang dapat di-refund");
+        }
+
+        // Kembalikan stok tiket
+        Tiket tiket = booking.getTiket();
+        tiket.setStok(tiket.getStok() + booking.getJumlah());
+        tiketRepository.save(tiket);
+
+        booking.setStatus("REFUNDED");
+        return bookingRepository.save(booking);
+    }
+
+    public List<Booking> findByUser(User user) {
+        return bookingRepository.findByUserOrderByBookedAtDesc(user);
+    }
+
+    public List<Booking> findAll() {
+        return bookingRepository.findAllByOrderByBookedAtDesc();
+    }
+
+    public Booking findById(Long id) {
+        return bookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Booking tidak ditemukan"));
+    }
+
+    public Booking findByKode(String kode) {
+        return bookingRepository.findByKodeBooking(kode)
+                .orElseThrow(() -> new RuntimeException("Kode booking tidak ditemukan"));
+    }
 
     public Booking validateKode(String kode) {
         Booking booking = findByKode(kode);

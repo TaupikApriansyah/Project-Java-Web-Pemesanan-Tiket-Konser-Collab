@@ -1,10 +1,141 @@
 <!DOCTYPE html>
 <html lang="id" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Form Tiket</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/custom.css}">
 </head>
-<body><div class="bg-mesh"></div><button onclick="goBack('/admin/tiket')" class="mobile-back"><i class="fas fa-arrow-left"></i></button><main class="max-w-3xl mx-auto px-5 md:px-8 py-12 md:py-16"><button onclick="goBack('/admin/tiket')" class="hidden md:inline text-xs uppercase tracking-widest text-slate-500 hover:text-white">← Kelola Event</button><section class="panel rounded-[32px] p-6 md:p-8 mt-8"><h1 class="text-4xl font-extrabold tracking-tighter mb-2">Form Event</h1><p class="text-slate-500 mb-8">Admin bisa menambahkan gambar konser melalui upload file atau URL gambar.</p><form th:action="@{/admin/tiket/save}" th:object="${tiket}" method="post" enctype="multipart/form-data" class="grid md:grid-cols-2 gap-4"><input type="hidden" th:field="*{id}"><input type="hidden" th:field="*{gambar}"><div class="md:col-span-2 rounded-3xl overflow-hidden border border-white/5"><img id="previewImage" th:if="${tiket.gambar != null and !#strings.isEmpty(tiket.gambar)}" th:src="${tiket.gambar}" class="image-preview w-full" alt="Preview"><div id="emptyPreview" th:if="${tiket.gambar == null or #strings.isEmpty(tiket.gambar)}" class="image-preview w-full flex items-center justify-center text-slate-600"><i class="fas fa-image text-5xl"></i></div></div><input th:field="*{nama}" class="input-premium rounded-2xl px-5 py-4 md:col-span-2" placeholder="Nama event" required><input th:field="*{kategori}" class="input-premium rounded-2xl px-5 py-4" placeholder="Kategori" required><input th:field="*{tanggal}" type="date" class="input-premium rounded-2xl px-5 py-4" required><input th:field="*{harga}" type="number" step="0.01" class="input-premium rounded-2xl px-5 py-4" placeholder="Harga" required><input th:field="*{stok}" type="number" class="input-premium rounded-2xl px-5 py-4" placeholder="Stok" required><input th:field="*{lokasi}" class="input-premium rounded-2xl px-5 py-4 md:col-span-2" placeholder="Lokasi"><textarea th:field="*{deskripsi}" class="input-premium rounded-2xl px-5 py-4 md:col-span-2" rows="4" placeholder="Deskripsi"></textarea><div class="md:col-span-2 grid md:grid-cols-2 gap-4"><label class="block"><span class="text-xs text-slate-500 uppercase tracking-widest font-bold">Upload gambar</span><input id="gambarFile" type="file" name="gambarFile" accept="image/png,image/jpeg,image/webp" class="mt-2 w-full input-premium rounded-2xl px-5 py-4 text-sm"></label><label class="block"><span class="text-xs text-slate-500 uppercase tracking-widest font-bold">Atau URL gambar</span><input id="gambarUrl" name="gambarUrl" class="mt-2 w-full input-premium rounded-2xl px-5 py-4" placeholder="https://...jpg"></label></div><button class="btn-premium rounded-2xl py-4 font-bold text-xs uppercase tracking-widest md:col-span-2">Simpan Event</button></form></section></main><script th:src="@{/js/app.js}"></script><script>const fileInput=document.getElementById('gambarFile'), urlInput=document.getElementById('gambarUrl');function showPreview(src){let img=document.getElementById('previewImage');const empty=document.getElementById('emptyPreview');if(!img){img=document.createElement('img');img.id='previewImage';img.className='image-preview w-full';document.querySelector('.rounded-3xl.overflow-hidden').appendChild(img)}if(empty)empty.style.display='none';img.src=src;}fileInput?.addEventListener('change',e=>{const f=e.target.files?.[0];if(f)showPreview(URL.createObjectURL(f));});urlInput?.addEventListener('input',e=>{if(e.target.value.trim())showPreview(e.target.value.trim());});</script></body></html>
+<body>
+<div class="bg-mesh"></div>
+<button onclick="goBack('/admin/tiket')" class="mobile-back">
+    <i class="fas fa-arrow-left"></i>
+</button>
+
+<main class="max-w-3xl mx-auto px-5 md:px-8 py-12 md:py-16">
+    <button onclick="goBack('/admin/tiket')"
+            class="hidden md:inline text-xs uppercase tracking-widest text-slate-500 hover:text-white">
+        ← Kelola Event
+    </button>
+
+    <section class="panel rounded-[32px] p-6 md:p-8 mt-8">
+        <h1 class="text-4xl font-extrabold tracking-tighter mb-2">Form Event</h1>
+        <p class="text-slate-500 mb-8">Admin bisa menambahkan gambar konser melalui upload file atau URL gambar.</p>
+
+        <form th:action="@{/admin/tiket/save}"
+              th:object="${tiket}"
+              method="post"
+              enctype="multipart/form-data"
+              class="grid md:grid-cols-2 gap-4">
+
+            <input type="hidden" th:field="*{id}">
+            <input type="hidden" th:field="*{gambar}">
+
+            <!-- Preview gambar -->
+            <div class="md:col-span-2 rounded-3xl overflow-hidden border border-white/5">
+                <img id="previewImage"
+                     th:if="${tiket.gambar != null and !#strings.isEmpty(tiket.gambar)}"
+                     th:src="${tiket.gambar}"
+                     class="image-preview w-full"
+                     alt="Preview">
+                <div id="emptyPreview"
+                     th:if="${tiket.gambar == null or #strings.isEmpty(tiket.gambar)}"
+                     class="image-preview w-full flex items-center justify-center text-slate-600">
+                    <i class="fas fa-image text-5xl"></i>
+                </div>
+            </div>
+
+            <input th:field="*{nama}"
+                   class="input-premium rounded-2xl px-5 py-4 md:col-span-2"
+                   placeholder="Nama event"
+                   required>
+
+            <input th:field="*{kategori}"
+                   class="input-premium rounded-2xl px-5 py-4"
+                   placeholder="Kategori"
+                   required>
+
+            <input th:field="*{tanggal}"
+                   type="date"
+                   class="input-premium rounded-2xl px-5 py-4"
+                   required>
+
+            <input th:field="*{harga}"
+                   type="number"
+                   step="0.01"
+                   class="input-premium rounded-2xl px-5 py-4"
+                   placeholder="Harga"
+                   required>
+
+            <input th:field="*{stok}"
+                   type="number"
+                   class="input-premium rounded-2xl px-5 py-4"
+                   placeholder="Stok"
+                   required>
+
+            <input th:field="*{lokasi}"
+                   class="input-premium rounded-2xl px-5 py-4 md:col-span-2"
+                   placeholder="Lokasi">
+
+            <textarea th:field="*{deskripsi}"
+                      class="input-premium rounded-2xl px-5 py-4 md:col-span-2"
+                      rows="4"
+                      placeholder="Deskripsi"></textarea>
+
+            <!-- Upload gambar -->
+            <div class="md:col-span-2 grid md:grid-cols-2 gap-4">
+                <label class="block">
+                    <span class="text-xs text-slate-500 uppercase tracking-widest font-bold">Upload gambar</span>
+                    <input id="gambarFile"
+                           type="file"
+                           name="gambarFile"
+                           accept="image/png,image/jpeg,image/webp"
+                           class="mt-2 w-full input-premium rounded-2xl px-5 py-4 text-sm">
+                </label>
+                <label class="block">
+                    <span class="text-xs text-slate-500 uppercase tracking-widest font-bold">Atau URL gambar</span>
+                    <input id="gambarUrl"
+                           name="gambarUrl"
+                           class="mt-2 w-full input-premium rounded-2xl px-5 py-4"
+                           placeholder="https://...jpg">
+                </label>
+            </div>
+
+            <button class="btn-premium rounded-2xl py-4 font-bold text-xs uppercase tracking-widest md:col-span-2">
+                Simpan Event
+            </button>
+        </form>
+    </section>
+</main>
+
+<script th:src="@{/js/app.js}"></script>
+<script>
+    const fileInput = document.getElementById('gambarFile');
+    const urlInput  = document.getElementById('gambarUrl');
+
+    function showPreview(src) {
+        let img = document.getElementById('previewImage');
+        const empty = document.getElementById('emptyPreview');
+        if (!img) {
+            img = document.createElement('img');
+            img.id = 'previewImage';
+            img.className = 'image-preview w-full';
+            document.querySelector('.rounded-3xl.overflow-hidden').appendChild(img);
+        }
+        if (empty) empty.style.display = 'none';
+        img.src = src;
+    }
+
+    fileInput?.addEventListener('change', e => {
+        const f = e.target.files?.[0];
+        if (f) showPreview(URL.createObjectURL(f));
+    });
+
+    urlInput?.addEventListener('input', e => {
+        if (e.target.value.trim()) showPreview(e.target.value.trim());
+    });
+</script>
+</body>
+</html>
