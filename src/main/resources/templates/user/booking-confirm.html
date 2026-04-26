@@ -20,7 +20,7 @@
     </button>
 
     <h1 class="text-5xl font-extrabold tracking-tighter mt-8 mb-4">Checkout Tiket</h1>
-    <p class="text-slate-500 mb-10">Alur: pilih jumlah → pilih metode bayar simulasi → konfirmasi → tiket digital tersimpan di riwayat.</p>
+    <p class="text-slate-500 mb-10">ALUR: PILIH JUMLAH TIKET YANG INGIN DIBELI → PILIH METODE PEMBAYARAN → KONFIRMASI BOOKING → TIKET DIGITAL TERSIMPAN DI RIWAYAT ANDA.</p>
 
     <div class="grid md:grid-cols-[1fr_340px] gap-8">
 
@@ -63,10 +63,10 @@
                     <p class="font-black mt-0.5">
                         <span th:if="${tiket.stok > 10}"
                               class="text-emerald-400"
-                              th:text="${tiket.stok} + ' tiket tersedia'">Tersedia</span>
+                              th:text="${tiket.stok} + ' Tiket'">Tersedia</span>
                         <span th:if="${tiket.stok > 0 and tiket.stok <= 10}"
                               class="text-amber-400"
-                              th:text="'Hampir habis — sisa ' + ${tiket.stok} + ' tiket!'">Hampir habis</span>
+                              th:text="'Hampir habis — sisa ' + ${tiket.stok} + ' Tiket!'">Hampir habis</span>
                         <span th:if="${tiket.stok <= 0}"
                               class="text-red-400">Stok habis</span>
                     </p>
@@ -101,9 +101,6 @@
                    value="1"
                    class="mt-2 w-full input-premium rounded-2xl px-5 py-4"
                    required>
-            <p class="mt-1.5 text-[10px] text-slate-600 font-bold uppercase tracking-widest">
-                Maks. <span th:text="${tiket.stok}">0</span> tiket per transaksi
-            </p>
 
             <label class="block mt-6 text-xs text-slate-500 uppercase tracking-widest font-bold">
                 Pembayaran

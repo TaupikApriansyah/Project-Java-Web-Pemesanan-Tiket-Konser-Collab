@@ -8,21 +8,34 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/custom.css}">
 </head>
+<!-- Navbar -->
+<nav class="glass-nav sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 md:px-8 h-20 flex justify-between items-center">
+        <a th:href="@{/}" class="flex items-center gap-3 font-bold uppercase tracking-tight">
+            <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center">
+                <i class="fas fa-ticket-alt"></i>
+            </span>
+            Event<span class="text-emerald-400 -ml-3">Tick</span> Admin
+        </a>
+        <div class="flex gap-5 text-[10px] md:text-xs uppercase tracking-widest font-bold overflow-x-auto no-scrollbar">
+            <a th:href="@{/admin/dashboard}" class="text-slate-400 hover:text-white">Dashboard</a>
+            <a th:href="@{/admin/tiket}" class="text-emerald-400">Konser</a>
+            <a th:href="@{/admin/users}" class="text-slate-400 hover:text-white">User</a>
+            <a th:href="@{/admin/scan}" class="text-slate-400 hover:text-white">Validasi</a>
+            <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post">
+                <button class="text-slate-400 hover:text-red-400 uppercase">Logout</button>
+            </form>
+        </div>
+    </div>
+</nav>
 <body>
 <div class="bg-mesh"></div>
-<button onclick="goBack('/admin/dashboard')" class="mobile-back">
-    <i class="fas fa-arrow-left"></i>
-</button>
 
 <main class="max-w-6xl mx-auto px-5 md:px-8 py-12 md:py-16">
 
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-6 mb-10">
         <div>
-            <button onclick="goBack('/admin/dashboard')"
-                    class="hidden md:inline text-xs uppercase tracking-widest text-slate-500 hover:text-white">
-                ← Dashboard
-            </button>
             <h1 class="text-5xl font-extrabold tracking-tighter mt-4">Kelola Event</h1>
             <p class="text-slate-500 mt-2">Tambah, edit, hapus event, dan upload gambar konser.</p>
         </div>

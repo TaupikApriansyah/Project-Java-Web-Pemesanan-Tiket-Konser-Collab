@@ -26,6 +26,9 @@
             <a th:href="@{/admin/tiket}" class="text-slate-400 hover:text-white">Konser</a>
             <a th:href="@{/admin/users}" class="text-slate-400 hover:text-white">User</a>
             <a th:href="@{/admin/scan}" class="text-slate-400 hover:text-white">Validasi</a>
+            <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post">
+                <button class="text-slate-400 hover:text-red-400 uppercase">Logout</button>
+            </form>
         </div>
     </div>
 </nav>
